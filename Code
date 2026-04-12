@@ -1,0 +1,413 @@
+@echo off
+:: Check for Admin Rights
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    cls
+    color 0C
+    echo ==============================================================
+    echo   ERROR: You must run this as Administrator!
+    echo   Right-click the file and select "Run as administrator"
+    echo ==============================================================
+    pause
+    exit /b
+)
+
+:menu
+cls
+color 0B
+echo ==============================================================
+echo         Z E N O U   T W E A K I N G   U T I L I T Y   V1
+echo ==============================================================
+echo.
+echo   [1] Performance    [2] Gaming         [3] Network
+echo   [4] Privacy        [5] Cleanup        [6] Fix/Restore
+echo                      [7] Exit
+echo.
+set /p choice=Select option: 
+
+if "%choice%"=="1" goto performance
+if "%choice%"=="2" goto gaming
+if "%choice%"=="3" goto network
+if "%choice%"=="4" goto privacy
+if "%choice%"=="5" goto cleanup
+if "%choice%"=="6" goto fix
+if "%choice%"=="7" exit
+goto menu
+
+:: ============================================================
+::                    PERFORMANCE TWEAKS
+:: ============================================================
+:performance
+cls
+color 0E
+echo ==============================================================
+echo              P E R F O R M A N C E   T W E A K S
+echo ==============================================================
+echo.
+
+echo [TWEAK 1] Set Power Plan to High Performance
+echo   ^ This switches Windows power plan to maximum performance.
+echo   ^ Your CPU will run at full speed at all times.
+echo   ^ Downside: uses more electricity, laptop battery drains faster.
+echo.
+set /p t1=Apply this tweak? (Yes/No): 
+if /I "%t1%"=="Yes" (
+    powercfg -setactive SCHEME_MIN
+    echo   [DONE] Power plan set to High Performance.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 2] Disable SysMain (Superfetch)
+echo   ^ SysMain preloads apps into RAM to speed up launches.
+echo   ^ On SSDs this is unnecessary and can cause disk thrashing.
+echo   ^ Recommended if you have an SSD.
+echo.
+set /p t2=Apply this tweak? (Yes/No): 
+if /I "%t2%"=="Yes" (
+    sc stop SysMain >nul 2>&1
+    sc config SysMain start=disabled >nul 2>&1
+    echo   [DONE] SysMain disabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 3] Disable Hibernation
+echo   ^ Removes the hibernation file (hiberfil.sys) from your C drive.
+echo   ^ Frees up several GB of disk space equal to your RAM size.
+echo   ^ Downside: you can no longer hibernate your PC.
+echo.
+set /p t3=Apply this tweak? (Yes/No): 
+if /I "%t3%"=="Yes" (
+    powercfg -h off
+    echo   [DONE] Hibernation disabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 4] Set Manual Page File (Virtual RAM)
+echo   ^ Sets your virtual memory (pagefile) to a fixed 4GB-8GB.
+echo   ^ Stops Windows constantly resizing it which causes slowdowns.
+echo   ^ Recommended: have at least 8GB of real RAM before doing this.
+echo.
+set /p t4=Apply this tweak? (Yes/No): 
+if /I "%t4%"=="Yes" (
+    wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False >nul 2>&1
+    wmic pagefileset where name="C:\\pagefile.sys" set InitialSize=4096,MaximumSize=8192 >nul 2>&1
+    echo   [DONE] Page file set to 4096MB - 8192MB.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+pause
+goto menu
+
+:: ============================================================
+::                      GAMING TWEAKS
+:: ============================================================
+:gaming
+cls
+color 0D
+echo ==============================================================
+echo                G A M I N G   T W E A K S
+echo ==============================================================
+echo.
+
+echo [TWEAK 1] Enable Auto Game Mode
+echo   ^ Windows Game Mode automatically prioritises your game
+echo   ^ over background processes, giving it more CPU and GPU time.
+echo   ^ Recommended for all gamers.
+echo.
+set /p g1=Apply this tweak? (Yes/No): 
+if /I "%g1%"=="Yes" (
+    reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 1 /f >nul 2>&1
+    echo   [DONE] Auto Game Mode enabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 2] Disable Game DVR (Xbox Game Bar Recording)
+echo   ^ Game DVR constantly records your gameplay in the background.
+echo   ^ This uses CPU, GPU, RAM and storage even when you dont want it.
+echo   ^ Disabling it frees up resources for better FPS.
+echo.
+set /p g2=Apply this tweak? (Yes/No): 
+if /I "%g2%"=="Yes" (
+    reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f >nul 2>&1
+    reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" /v value /t REG_DWORD /d 0 /f >nul 2>&1
+    echo   [DONE] Game DVR disabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 3] Reduce Menu Delay to 0ms
+echo   ^ Windows adds a small delay before showing menus.
+echo   ^ Setting it to 0 makes the entire UI feel snappier and faster.
+echo   ^ No downsides.
+echo.
+set /p g3=Apply this tweak? (Yes/No): 
+if /I "%g3%"=="Yes" (
+    reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 0 /f >nul 2>&1
+    echo   [DONE] Menu delay set to 0ms.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+pause
+goto menu
+
+:: ============================================================
+::                      NETWORK TWEAKS
+:: ============================================================
+:network
+cls
+color 0B
+echo ==============================================================
+echo               N E T W O R K   T W E A K S
+echo ==============================================================
+echo.
+
+echo [TWEAK 1] Flush DNS Cache
+echo   ^ Your PC stores old website addresses (DNS) which can cause
+echo   ^ slow loading or connection errors if they become outdated.
+echo   ^ Flushing clears this cache and forces fresh lookups.
+echo   ^ Safe to do at any time. No downsides.
+echo.
+set /p n1=Apply this tweak? (Yes/No): 
+if /I "%n1%"=="Yes" (
+    ipconfig /flushdns >nul 2>&1
+    echo   [DONE] DNS cache flushed.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 2] Set TCP Auto-Tuning to Normal
+echo   ^ Windows automatically adjusts how fast it sends/receives data.
+echo   ^ Setting to Normal is the best balance for most connections.
+echo   ^ Can improve download speeds and reduce latency.
+echo.
+set /p n2=Apply this tweak? (Yes/No): 
+if /I "%n2%"=="Yes" (
+    netsh interface tcp set global autotuninglevel=normal >nul 2>&1
+    echo   [DONE] TCP Auto-Tuning set to Normal.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 3] Enable TCP ACK Frequency (Lower Ping)
+echo   ^ Normally Windows waits before sending acknowledgement packets.
+echo   ^ Setting this to 1 makes it respond instantly every packet.
+echo   ^ Can reduce ping in online games and real-time applications.
+echo.
+set /p n3=Apply this tweak? (Yes/No): 
+if /I "%n3%"=="Yes" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" /v TcpAckFrequency /t REG_DWORD /d 1 /f >nul 2>&1
+    echo   [DONE] TCP ACK Frequency set to 1.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+pause
+goto menu
+
+:: ============================================================
+::                      PRIVACY TWEAKS
+:: ============================================================
+:privacy
+cls
+color 0C
+echo ==============================================================
+echo               P R I V A C Y   T W E A K S
+echo ==============================================================
+echo.
+
+echo [TWEAK 1] Reduce Telemetry Data Sent to Microsoft
+echo   ^ Windows sends usage data, error reports and diagnostics
+echo   ^ back to Microsoft servers constantly in the background.
+echo   ^ Setting to level 1 (Security) sends the bare minimum only.
+echo   ^ Does NOT fully disable it but significantly reduces it.
+echo.
+set /p p1=Apply this tweak? (Yes/No): 
+if /I "%p1%"=="Yes" (
+    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 1 /f >nul 2>&1
+    echo   [DONE] Telemetry reduced to minimum level.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 2] Disable DiagTrack (Connected User Experiences)
+echo   ^ This service collects diagnostic and usage data and
+echo   ^ uploads it to Microsoft constantly in the background.
+echo   ^ Stopping it reduces background CPU and network usage.
+echo   ^ Downside: Microsoft gets less crash report data from your PC.
+echo.
+set /p p2=Apply this tweak? (Yes/No): 
+if /I "%p2%"=="Yes" (
+    sc stop DiagTrack >nul 2>&1
+    sc config DiagTrack start=disabled >nul 2>&1
+    echo   [DONE] DiagTrack service stopped and disabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+pause
+goto menu
+
+:: ============================================================
+::                       CLEANUP
+:: ============================================================
+:cleanup
+cls
+color 06
+echo ==============================================================
+echo              S Y S T E M   C L E A N U P
+echo ==============================================================
+echo.
+
+echo [TWEAK 1] Delete Temp Files (User Temp Folder)
+echo   ^ Clears out your personal temp folder (%TEMP%).
+echo   ^ These are leftover files from installs, updates and apps.
+echo   ^ Completely safe. Frees up disk space. No downsides.
+echo.
+set /p c1=Apply this tweak? (Yes/No): 
+if /I "%c1%"=="Yes" (
+    del /s /q "%temp%\*" >nul 2>&1
+    echo   [DONE] User temp files deleted.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 2] Delete Windows Temp Files (System Temp Folder)
+echo   ^ Clears the Windows system-wide temp folder.
+echo   ^ Same as above but for system-level temporary files.
+echo   ^ Some files may be locked and skipped automatically.
+echo.
+set /p c2=Apply this tweak? (Yes/No): 
+if /I "%c2%"=="Yes" (
+    del /s /q "C:\Windows\Temp\*" >nul 2>&1
+    echo   [DONE] Windows temp files deleted.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 3] Run Disk Cleanup (cleanmgr)
+echo   ^ Opens the built-in Windows Disk Cleanup tool in silent mode.
+echo   ^ Removes update caches, recycle bin, thumbnails and more.
+echo   ^ NOTE: This may take a few minutes to complete silently.
+echo.
+set /p c3=Apply this tweak? (Yes/No): 
+if /I "%c3%"=="Yes" (
+    cleanmgr /sagerun:1
+    echo   [DONE] Disk Cleanup completed.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+pause
+goto menu
+
+:: ============================================================
+::                    FIX / RESTORE
+:: ============================================================
+:fix
+cls
+color 0A
+echo ==============================================================
+echo           F I X  /  R E S T O R E   D E F A U L T S
+echo ==============================================================
+echo.
+
+echo [TWEAK 1] Restore Balanced Power Plan
+echo   ^ Switches your power plan back to Windows Balanced default.
+echo   ^ Recommended if your laptop battery life got worse.
+echo.
+set /p f1=Apply this tweak? (Yes/No): 
+if /I "%f1%"=="Yes" (
+    powercfg -setactive SCHEME_BALANCED
+    echo   [DONE] Power plan restored to Balanced.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 2] Re-enable SysMain (Superfetch)
+echo   ^ Turns Superfetch back on if you disabled it earlier.
+echo   ^ Recommended if you have an HDD instead of an SSD.
+echo.
+set /p f2=Apply this tweak? (Yes/No): 
+if /I "%f2%"=="Yes" (
+    sc config SysMain start=auto >nul 2>&1
+    sc start SysMain >nul 2>&1
+    echo   [DONE] SysMain re-enabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 3] Re-enable Hibernation
+echo   ^ Turns hibernation back on and recreates hiberfil.sys.
+echo   ^ Needed if you want to hibernate your PC again.
+echo.
+set /p f3=Apply this tweak? (Yes/No): 
+if /I "%f3%"=="Yes" (
+    powercfg -h on
+    echo   [DONE] Hibernation re-enabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 4] Restore Menu Delay to Default (400ms)
+echo   ^ Puts the Windows menu delay back to the default 400ms.
+echo.
+set /p f4=Apply this tweak? (Yes/No): 
+if /I "%f4%"=="Yes" (
+    reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 400 /f >nul 2>&1
+    echo   [DONE] Menu delay restored to 400ms.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 5] Restore Telemetry to Default Level
+echo   ^ Sets Microsoft telemetry back to full default level (3).
+echo.
+set /p f5=Apply this tweak? (Yes/No): 
+if /I "%f5%"=="Yes" (
+    reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 3 /f >nul 2>&1
+    echo   [DONE] Telemetry restored.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+echo [TWEAK 6] Re-enable DiagTrack Service
+echo   ^ Turns the Connected User Experiences service back on.
+echo.
+set /p f6=Apply this tweak? (Yes/No): 
+if /I "%f6%"=="Yes" (
+    sc config DiagTrack start=auto >nul 2>&1
+    sc start DiagTrack >nul 2>&1
+    echo   [DONE] DiagTrack re-enabled.
+) else (
+    echo   [SKIPPED]
+)
+echo.
+
+pause
+goto menu
