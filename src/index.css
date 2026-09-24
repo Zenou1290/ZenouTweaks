@@ -1,0 +1,328 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Zenou design tokens — ported from mockup/zenou-ui-mockup.html
+   ============================================================ */
+:root {
+  --font-base: Inter, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+
+  --bg-behind: #07080a;
+  --bg-base: #0b0d0f;
+  --bg-panel: #121518;
+  --bg-elevated: #171b1f;
+  --bg-input: #0e1114;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text-primary: #e8ecef;
+  --text-muted: rgba(232, 236, 239, 0.62);
+  --text-dim: rgba(232, 236, 239, 0.38);
+
+  --accent: #2dd4bf;
+  --accent-strong: #5eead4;
+  --accent-ink: #062b26;
+  --accent-soft: rgba(45, 212, 191, 0.1);
+  --accent-border: rgba(45, 212, 191, 0.28);
+
+  --status-success: #34d399;
+  --status-warn: #fbbf24;
+  --status-danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.12);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --ease: cubic-bezier(0.3, 0, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* Tailwind RGB triplet shims (used by tailwind.config.js) */
+:root {
+  --c-app: 11 13 15;
+  --c-behind: 7 8 10;
+  --c-panel: 18 21 24;
+  --c-elevated: 23 27 31;
+  --c-input: 14 17 20;
+  --c-ink: 232 236 239;
+  --c-muted-rgb: 232 236 239;
+  --c-dim-rgb: 232 236 239;
+  --c-accent: 45 212 191;
+  --c-accent-strong: 94 234 212;
+  --c-accent-soft: 45 212 191;
+  --c-accent-border: 45 212 191;
+  --c-ok: 52 211 153;
+  --c-warn: 251 191 36;
+  --c-danger: 248 113 113;
+}
+
+[data-theme="light"] {
+  --bg-behind: #d9dee3;
+  --bg-base: #f2f4f6;
+  --bg-panel: #ffffff;
+  --bg-elevated: #f7f9fa;
+  --bg-input: #eef1f3;
+  --border-subtle: rgba(10, 20, 24, 0.07);
+  --border: rgba(10, 20, 24, 0.12);
+  --border-strong: rgba(10, 20, 24, 0.2);
+  --text-primary: #10161a;
+  --text-muted: rgba(16, 22, 26, 0.62);
+  --text-dim: rgba(16, 22, 26, 0.4);
+  --accent: #0d9488;
+  --accent-strong: #0f766e;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(13, 148, 136, 0.09);
+  --accent-border: rgba(13, 148, 136, 0.35);
+  --status-success: #059669;
+  --status-warn: #b45309;
+  --status-danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.08);
+  color-scheme: light;
+}
+[data-theme="light"] {
+  --c-app: 242 244 246;
+  --c-behind: 217 222 227;
+  --c-panel: 255 255 255;
+  --c-elevated: 247 249 250;
+  --c-input: 238 241 243;
+  --c-ink: 16 22 26;
+  --c-muted-rgb: 16 22 26;
+  --c-dim-rgb: 16 22 26;
+  --c-accent: 13 148 136;
+  --c-accent-strong: 15 118 110;
+  --c-accent-soft: 13 148 136;
+  --c-accent-border: 13 148 136;
+  --c-ok: 5 150 105;
+  --c-warn: 180 83 9;
+  --c-danger: 220 38 38;
+}
+
+/* Accent variants (Settings > Accent color) */
+[data-accent="emerald"] {
+  --accent: #34d399;
+  --accent-strong: #6ee7b7;
+  --accent-ink: #052e1f;
+  --accent-soft: rgba(52, 211, 153, 0.1);
+  --accent-border: rgba(52, 211, 153, 0.28);
+}
+[data-accent="sky"] {
+  --accent: #38bdf8;
+  --accent-strong: #7dd3fc;
+  --accent-ink: #082f49;
+  --accent-soft: rgba(56, 189, 248, 0.1);
+  --accent-border: rgba(56, 189, 248, 0.28);
+}
+[data-accent="violet"] {
+  --accent: #a78bfa;
+  --accent-strong: #c4b5fd;
+  --accent-ink: #2e1065;
+  --accent-soft: rgba(167, 139, 250, 0.1);
+  --accent-border: rgba(167, 139, 250, 0.28);
+}
+[data-accent="teal"] {
+  /* default */
+}
+
+/* Reduced motion */
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-base);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
+/* Desktop-style selection: selectable in text surfaces only */
+.selectable,
+input,
+textarea {
+  user-select: text;
+  cursor: text;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  .zcard {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.45);
+  }
+  .zcard-pad {
+    padding: 16px;
+  }
+  .zhead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--bg-input);
+    border-color: var(--border-strong);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-muted);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+  }
+  .btn-danger {
+    background: transparent;
+    border-color: var(--danger-border, rgba(248, 113, 113, 0.3));
+    color: var(--status-danger);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: var(--danger-soft);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-input);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .chip-ok {
+    color: var(--status-success);
+    border-color: rgba(52, 211, 153, 0.3);
+    background: rgba(52, 211, 153, 0.08);
+  }
+  .chip-warn {
+    color: var(--status-warn);
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.08);
+  }
+  .chip-danger {
+    color: var(--status-danger);
+    border-color: rgba(248, 113, 113, 0.3);
+    background: rgba(248, 113, 113, 0.08);
+  }
+  .chip-accent {
+    color: var(--accent);
+    border-color: var(--accent-border);
+    background: var(--accent-soft);
+  }
+  .input {
+    height: 32px;
+    padding: 0 10px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 12.5px;
+    outline: none;
+    transition: border-color 150ms var(--ease);
+  }
+  .input:focus {
+    border-color: var(--accent-border);
+  }
+  .kbd {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+}
+
+@keyframes zen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.zspin {
+  animation: zen-spin 0.9s linear infinite;
+}
